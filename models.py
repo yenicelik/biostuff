@@ -21,7 +21,7 @@ class RandomModel(Model):
 
     def predict(self, X):
         # Return a random prediction for each sample
-        return np.random.rand(X.shape[0])
+        return np.random.randint(2, size=X.shape[0])
 
     def fit(self, X):
         pass
