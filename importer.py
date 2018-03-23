@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-DEV = True
-DEV_SIZE = 20
+DEV = False
+DEV_SIZE = 100
 
 class Importer:
 

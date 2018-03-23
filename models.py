@@ -4,10 +4,15 @@ import pandas as pd
 import sys
 import os
 #from keras.layers import Input, Dense
-
+from sklearn.feature_selection import RFE
 from tpot import TPOTClassifier
+from sklearn.feature_selection import SelectKBest as skb
 
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.feature_selection import RFE
+from sklearn.decomposition import PCA
+
+from sklearn.ensemble import AdaBoostClassifier, ExtraTreesClassifier
+from sklearn.svm import SVC
 
 class Model:
 
@@ -80,6 +85,47 @@ class TPot(Model):
 
     def predict(self, X):
         pass
+
+class FeatureSelection(Model):
+
+    def __init__(self):
+        print("Feature selection")
+        self.TOP = 500
+
+    def fit(self, X, y):
+        print("Finish 0")
+        estimator = SVC(kernel="linear")
+        selector1 = RFE(estimator, n_features_to_select=self.TOP, step=1)
+        selector1 = selector1.fit(X, y)
+        feature_position1 = np.where(selector1.support_)
+
+        print("Finished 1")
+
+        selector2 = ExtraTreesClassifier()
+        selector2 = selector2.fit(X, y)
+        feature_position2 = np.argsort(selector2.feature_importances_)[:-self.TOP]
+
+        print("Finished 2")
+
+        selector3 = skb(k=200).fit(X, y)
+        feature_position3 = np.argsort(selector3.scores_)[:-self.TOP]
+
+        print("Finished 3")
+
+        selector4 = PCA(n_components=self.TOP)
+        selector4.fit(X)
+        feature_position4 = np.argsort(selector4.explained_variance_)[:-self.TOP]
+
+        print("Finished 4")
+
+        #
+        feature_common_position = np.intersect1d(feature_position1, feature_position2)
+        feature_common_position = np.intersect1d(feature_common_position, feature_position3)
+        feature_common_position = np.intersect1d(feature_common_position, feature_position4)
+        print("Top common features found are: ")
+        print(feature_common_position)
+        return feature_common_position
+        # return np.arange(X.shape[1])
 
 # class Autoencoder(Model):
 #

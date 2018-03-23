@@ -19,12 +19,13 @@ class Identity(FSelection):
         # Does affect the model!
         return np.arange(X.shape[1])
 
-class RFEReduction(FSelection):
+# class RFEReduction(FSelection):
+#
+#     def __init__(self):
+#         print("Feature selection")
+#
+#     def get_features(self, X, y, estimator):
+#         self.selector = RFE(estimator, n_features_to_select=200, step=1)
+#         self.selector = self.selector.fit(X, y)
+#         return self.selector.support
 
-    def __init__(self):
-        print("Feature selection")
-
-    def get_features(self, X, y, estimator):
-        self.selector = RFE(estimator, n_features_to_select=200, step=1)
-        self.selector = self.selector.fit(X, y)
-        return self.selector.support
