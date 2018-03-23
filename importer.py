@@ -30,10 +30,10 @@ class Importer:
             print(self.y_train.head(5))
 
     def get_X_y(self):
-        return self.X_train.loc[:, self.X_train.columns != "sample_name"], \
-               self.y_train.loc[:, self.y_train.columns == "Microgranuloma"], \
-               self.y_train.loc[:, self.y_train.columns == "Increasedmitosis"],\
-               self.y_train.loc[:, self.y_train.columns == "Hypertrophy"]
+        return np.asarray(self.X_train.loc[:, self.X_train.columns != "sample_name"]), \
+               np.asarray(self.y_train.loc[:, self.y_train.columns == "Microgranuloma"]), \
+               np.asarray(self.y_train.loc[:, self.y_train.columns == "Increasedmitosis"]),\
+               np.asarray(self.y_train.loc[:, self.y_train.columns == "Hypertrophy"])
 
 if __name__ == "__main__":
     print("Starting run!")
