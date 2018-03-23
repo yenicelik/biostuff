@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 DEV = True
-DEV_SIZE = 5
+DEV_SIZE = 20
 
 class Importer:
 

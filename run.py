@@ -4,6 +4,9 @@ import numpy as np
 
 from importer import Importer
 from models import RandomModel, AdaBoostModel, TPot
+from reductions import Identity, RFEReduction
+
+from sklearn.ensemble import AdaBoostClassifier
 
 class Runner():
 
@@ -16,7 +19,7 @@ class Runner():
             print("Printing imported shapes", self.X_train.shape, self.y_H.shape, self.y_I.shape, self.y_M.shape)
             print("Printing imported shapes", self.X_train[:3], self.y_H[:3], self.y_I[:3], self.y_M[:3])
 
-    def run(self, model, verbose=False):
+    def run(self, reduction, model, verbose=False):
         """
             Selects the best mode
         """
@@ -51,22 +54,28 @@ class Runner():
 
             # Go through each array!
             # I first!
-            model.fit(X_train, y_I_train)
-            y_pred = model.predict(X_cv)
+            feature_index_I = reduction.get_features(X_train, y_M_train, model)
+            model.fit(X_train[:,feature_index_I], y_M_train)
+
+            y_pred = model.predict(X_cv[:,feature_index_I])
             assert(y_pred.shape[0] == test_index.shape[0])
             f1_value = f1_score(y_pred, y_I_cv)
             f1_I.append(f1_value)
 
             # H second!
-            model.fit(X_train, y_H_train)
-            y_pred = model.predict(X_cv)
+            feature_index_H = reduction.get_features(X_train, y_M_train, model)
+            model.fit(X_train[:,feature_index_H], y_M_train)
+
+            y_pred = model.predict(X_cv[:,feature_index_H])
             assert(y_pred.shape[0] == test_index.shape[0])
             f1_value = f1_score(y_pred, y_H_cv)
             f1_H.append(f1_value)
 
             # M third!
-            model.fit(X_train, y_M_train)
-            y_pred = model.predict(X_cv)
+            feature_index_M = reduction.get_features(X_train, y_M_train, model)
+            model.fit(X_train[:,feature_index_M], y_M_train)
+
+            y_pred = model.predict(X_cv[:,feature_index_M])
             assert(y_pred.shape[0] == test_index.shape[0])
             f1_value = f1_score(y_pred, y_M_cv)
             f1_M.append(f1_value)
@@ -76,6 +85,7 @@ class Runner():
             print("F1 score for I: ", np.mean(f1_I))
             print("F1 score for M: ", np.mean(f1_M))
             print("F1 score for H: ", np.mean(f1_H))
+            print("Feature indecies: ", feature_index_M)
 
         return np.mean(f1_H), np.mean(f1_I), np.mean(f1_M)
 
@@ -90,15 +100,21 @@ class Runner():
 
     def batch_run_models(self):
 
+        all_reductions = [
+            ("None", Identity()),
+            ("RFE", RFEReduction())
+        ]
+
         all_models = [
-            ("Random Model: ", RandomModel()),
+        #    ("Random Model: ", RandomModel()),
             #("tpot Model: ", TPot()),
-            #("Adaboost", AdaBoostModel())
+            ("Adaboost", AdaBoostClassifier(n_estimators=10, learning_rate=1.))
         ]
 
         for model in all_models:
-            f1_H, f1_I, f1_M = runner.run(model[1])
-            print(model[0] + " has f1_H: " + str(f1_H) + ", f1_I: " + str(f1_I) + ", f1_M :" + str(f1_M))
+            for red in all_reductions:
+                f1_H, f1_I, f1_M = runner.run(red[1], model[1])
+                print(red[0] + ":" + model[0] + " has f1_H: " + str(f1_H) + ", f1_I: " + str(f1_I) + ", f1_M :" + str(f1_M))
 
     def meta_runners(self):
         # Call meta-algorithms here
@@ -118,6 +134,6 @@ if __name__ == "__main__":
 
     runner = Runner()
     rndModel = RandomModel
-#    runner.batch_run_models()
+    runner.batch_run_models()
 #    runner.run(rndModel)
-    runner.meta_runners()
+#    runner.meta_runners()
