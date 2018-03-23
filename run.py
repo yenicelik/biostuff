@@ -30,7 +30,7 @@ class Runner():
 
         kf = KFold(n_splits=10, shuffle=False)
         for train_index, test_index in kf.split(self.X_train):
-            i += 10
+            i += 1
             print("Progress: " + str(i) + " out of " + str(10))
 
             X_train = self.X_train[train_index]
