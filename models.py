@@ -3,7 +3,7 @@ import pandas as pd
 #from auto_ml import Predictor
 import sys
 import os
-from keras.layers import Input, Dense
+#from keras.layers import Input, Dense
 
 from tpot import TPOTClassifier
 
@@ -124,5 +124,3 @@ class TPot(Model):
 #     def transform(self, X, y):
 #         pass
 
-
-    def build_AE(X):
