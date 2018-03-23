@@ -1,6 +1,10 @@
 import numpy as np
 import pandas as pd
-from auto_ml import Predictor
+#from auto_ml import Predictor
+import sys
+import os
+
+from tpot import TPOTClassifier
 
 from sklearn.ensemble import AdaBoostClassifier
 
@@ -33,34 +37,6 @@ class RandomModel(Model):
     def transform(self, X):
         pass
 
-class AutoML(Model):
-
-    def __init__(self):
-        print("Starting AutoML")
-
-        self.parameter1 = 0.
-
-
-    def predict(self, X):
-        return self.trained_model.predict(X)
-
-    def fit(self, X, y):
-
-        # Rehsape it into a pandas dataframe, and re-write the model and column_description!
-        df_train = pd.DataFrame({'X': X, 'Y': y})
-
-        self.column_descriptions = {
-            'X': 'numerical',
-            'Y': 'output'
-        }
-
-        self.ml_predictor = Predictor(type_of_estimator='classifier', column_descriptions=self.column_descriptions)
-
-        self.ml_predictor.fit(df_train)
-
-    def transform(self, X, y):
-        pass
-
 class AdaBoostModel(Model):
 
     def __init__(self):
@@ -74,5 +50,33 @@ class AdaBoostModel(Model):
         return self.model.predict(X)
 
     def transform(self, X, y):
+        pass
+
+
+class TPot(Model):
+
+    def __init__(self):
+        print("Starting t pot!")
+
+    def fit(self, X, y, title=None):
+        # For this case, X and y are the complete datasets!!!
+        self.pipeline_optimizer = TPOTClassifier(
+            generations=1, #5,
+            cv=5,
+            random_state=42,
+            verbosity=3,
+            n_jobs=8,
+            max_eval_time_mins=1,#10,
+            scoring='f1',
+            subsample=0.5
+        )
+        self.pipeline_optimizer.fit(X, y)
+
+        if not os.path.exists("./automl"):
+            os.makedirs("./automl")
+
+        self.pipeline_optimizer.export('./automl/tpot_exported_pipeline_' + str(title) + '_.py')
+
+    def predict(self, X):
         pass
 

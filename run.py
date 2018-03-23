@@ -3,7 +3,7 @@ from sklearn.metrics import f1_score
 import numpy as np
 
 from importer import Importer
-from models import RandomModel, AutoML, AdaBoostModel
+from models import RandomModel, AdaBoostModel, TPot
 
 class Runner():
 
@@ -92,14 +92,20 @@ class Runner():
 
         all_models = [
             ("Random Model: ", RandomModel()),
-            #("AutoML: ", AutoML()),
-            ("Adaboost", AdaBoostModel())
+            #("tpot Model: ", TPot()),
+            #("Adaboost", AdaBoostModel())
         ]
 
         for model in all_models:
             f1_H, f1_I, f1_M = runner.run(model[1])
             print(model[0] + " has f1_H: " + str(f1_H) + ", f1_I: " + str(f1_I) + ", f1_M :" + str(f1_M))
 
+    def meta_runners(self):
+        # Call meta-algorithms here
+        tpot_instance = TPot()
+        tpot_instance.fit(self.X_train, self.y_H, "MODEL_y_H")
+        tpot_instance.fit(self.X_train, self.y_I, "MODEL_y_I")
+        tpot_instance.fit(self.X_train, self.y_M, "MODEL_y_M")
 
 if __name__ == "__main__":
     print("Starting runner!")
@@ -112,5 +118,6 @@ if __name__ == "__main__":
 
     runner = Runner()
     rndModel = RandomModel
-    runner.batch_run_models()
+#    runner.batch_run_models()
 #    runner.run(rndModel)
+    runner.meta_runners()
