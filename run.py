@@ -15,7 +15,7 @@ class Runner():
         if verbose:
             print("Printing imported shapes", self.X_train.shape, self.y_H.shape, self.y_I.shape, self.y_M.shape)
 
-    def run(self, model, verbose=True):
+    def run(self, model, verbose=False):
         """
             Selects the best mode
         """
@@ -33,7 +33,7 @@ class Runner():
             y_H_train = self.y_H[train_index]
             y_M_train = self.y_M[train_index]
 
-            X_cv = self.X_train
+            X_cv = self.X_train[test_index]
             y_I_cv = self.y_I[test_index]
             y_H_cv = self.y_H[test_index]
             y_M_cv = self.y_M[test_index]
@@ -45,28 +45,30 @@ class Runner():
             # Go through each array!
             # I first!
             model.fit(X_train, y_I_train)
-            y_pred = model.predict(X_train, y_I_cv)
+            y_pred = model.predict(X_cv)
             f1_value = f1_score(y_pred, y_I_cv)
             f1_I.append(f1_value)
 
             # H second!
             model.fit(X_train, y_H_train)
-            y_pred = model.predict(X_train, y_H_cv)
+            y_pred = model.predict(X_cv)
             f1_value = f1_score(y_pred, y_H_cv)
             f1_H.append(f1_value)
 
             # M third!
             model.fit(X_train, y_M_train)
-            y_pred = model.predict(X_train, y_M_cv)
+            y_pred = model.predict(X_cv)
             f1_value = f1_score(y_pred, y_M_cv)
             f1_M.append(f1_value)
 
-        print("Predicted average f1 scores are: ")
-        print("F1 score for I: ", np.mean(f1_I))
-        print("F1 score for M: ", np.mean(f1_M))
-        print("F1 score for H: ", np.mean(f1_H))
+        if verbose:
+            print("Predicted average f1 scores are: ")
+            print("F1 score for I: ", np.mean(f1_I))
+            print("F1 score for M: ", np.mean(f1_M))
+            print("F1 score for H: ", np.mean(f1_H))
 
-        #
+        return np.mean(f1_H), np.mean(f1_I), np.mean(f1_M)
+
         #     # classifier with ensemble
         #     # ATTENTION: unbalanced data
         #     # adaboost for each of the problem
@@ -76,15 +78,15 @@ class Runner():
         #     score = f1(X_M_validation, y_M_validation)
         #     print("Score " + score)
 
-    def get_baseline(self, X):
-        # This baseline is calculated doing random predictions
-        model = RandomModel()
-        y_hat = model.predict(X)
+    def batch_run_models(self):
 
-    def batch_run_models(self, arr_models):
+        all_models = [
+            ("Random Model: ", RandomModel())
+        ]
 
-        for model in arr_models:
-            pass
+        for model in all_models:
+            f1_H, f1_I, f1_M = runner.run(model[1])
+            print(model[0] + " has f1_H: {}, f1_I: {}, f1_M :{} ".format(f1_H, f1_I, f1_M) )
 
 
 
@@ -100,4 +102,5 @@ if __name__ == "__main__":
 
     runner = Runner()
     rndModel = RandomModel
-    runner.run(rndModel)
+    runner.batch_run_models()
+#    runner.run(rndModel)

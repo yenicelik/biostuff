@@ -23,7 +23,7 @@ class RandomModel(Model):
         # Return a random prediction for each sample
         return np.random.randint(2, size=X.shape[0])
 
-    def fit(self, X):
+    def fit(self, X, y):
         pass
 
     def transform(self, X):
