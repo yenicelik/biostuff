@@ -31,6 +31,8 @@ class Importer:
             print(self.y_train.head(5))
 
     def get_X_y(self):
+        # self.build_AE(X_train)
+        # X_out = self.transform_AE(X_train)
         return np.asarray(self.X_train.loc[:, self.X_train.columns != "sample_name"]), \
                np.asarray(self.y_train.loc[:, self.y_train.columns == "Microgranuloma"]).reshape(-1), \
                np.asarray(self.y_train.loc[:, self.y_train.columns == "Increasedmitosis"]).reshape(-1),\
