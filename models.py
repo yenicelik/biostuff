@@ -28,3 +28,4 @@ class RandomModel(Model):
 
     def transform(self, X):
         pass
+

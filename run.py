@@ -89,8 +89,6 @@ class Runner():
             print(model[0] + " has f1_H: {}, f1_I: {}, f1_M :{} ".format(f1_H, f1_I, f1_M) )
 
 
-
-
 if __name__ == "__main__":
     print("Starting runner!")
     #imp = Importer()
