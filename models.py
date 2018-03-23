@@ -61,7 +61,7 @@ class TPot(Model):
     def fit(self, X, y, title=None):
         # For this case, X and y are the complete datasets!!!
         self.pipeline_optimizer = TPOTClassifier(
-            generations=1, #5,
+            generations=5,
             cv=5,
             random_state=42,
             verbosity=3,
